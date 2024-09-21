@@ -11,14 +11,14 @@ database = MySQLDatabase(
     user=os.getenv("MYSQL_USER"),
     passwd=os.getenv("MYSQL_PASSWORD"),
     host=os.getenv("MYSQL_HOST"),
-    port=int(os.getenv("MYSQL_PORT")), 
+    port=int(os.getenv("MYSQL_PORT")),
 )
 
 class EventoModel(Model):
     id = AutoField(primary_key=True)
-    nombre = CharField(max_length=50)
-    fecha = DateTimeField()
-    ubicacion = CharField(max_length=50) 
+    name = CharField(max_length=50)
+    date = DateTimeField()
+    location = CharField(max_length=50) 
 
     class Meta:
         database = database
@@ -26,10 +26,9 @@ class EventoModel(Model):
 
 class TicketModel(Model):
     id = AutoField(primary_key=True)
-    evento_id = ForeignKeyField(EventoModel, backref="tickets")
-    usuario_id = IntegerField()  
-    fecha_compra = DateTimeField()
-   
+    event_id = ForeignKeyField(EventoModel, backref="tickets")
+    user_id = IntegerField()
+    date_purchase = DateTimeField()
 
     class Meta:
         database = database

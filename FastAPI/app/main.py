@@ -2,21 +2,20 @@ from fastapi import FastAPI
 from starlette.responses import RedirectResponse
 
 # Routers
-from .routes.event import event_router
-from .routes.ticket import ticket_router
+from routes.ticket import ticket_router
+from routes.event import event_router
 
 from contextlib import asynccontextmanager
-from database import database as connection
+from database import EventoModel, TicketModel, database as connection
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # COnectar a la base de datos si la conexcion esta cerrada
+
     if connection.is_closed():
         connection.connect()
     try:
         yield # Aqui se ejecuta la aplicacion
     finally:
-        #  Cerrar la conexcion cuando la aplicacion se detenga
         if not connection.is_closed:
             connection.close()
 
@@ -25,6 +24,12 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan = lifespan)
 
 # On Startup
+#@app.on_event("startup")
+#async def startup():
+#    connection.connect()
+    # Create tables if they do not exist
+#    connection.create_tables([EventoModel, TicketModel])
+
 # On Shutdown
 
 # Documentacion

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body
-from FastAPI.app.models.ticket import Ticket
-from FastAPI.app.database import TicketModel
+from models.ticket import Ticket
+from database import TicketModel
 from datetime import datetime
 
 ticket_router = APIRouter()

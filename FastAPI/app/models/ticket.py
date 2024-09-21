@@ -3,8 +3,8 @@ from datetime import datetime
 
 class Ticket(BaseModel):
     id: int
-    evento_id: int
-    usuario_id: int
-    fecha_compra: datetime
+    event_id: int
+    user_id: int
+    date_purchase: datetime
 
     

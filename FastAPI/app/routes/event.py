@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Body
-from FastAPI.app.models.event import Event
+from models.event import Event
 from database import EventoModel
 
 event_router = APIRouter()

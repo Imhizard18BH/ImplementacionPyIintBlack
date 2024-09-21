@@ -3,6 +3,6 @@ from datetime import datetime
 
 class Event(BaseModel):
     id: int
-    nombre: int
-    fecha: datetime
-    ubicacion: str
+    name: int
+    date: datetime
+    location: str
