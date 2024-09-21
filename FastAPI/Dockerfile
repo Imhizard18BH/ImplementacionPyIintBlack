@@ -18,4 +18,4 @@ ENV MYSQL_PORT=3306
 ENV MYSQL_USER=root
 ENV MYSQL_PASSWORD=root
 
-CMD [ "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80" ]
+CMD [ "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
