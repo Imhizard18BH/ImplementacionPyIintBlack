@@ -1,69 +1,113 @@
-from FastAPI import APIRouter, HTTPException, Body
-from FastAPI.app.models.event import Event
-from database import EventoModel 
+"""
+Service layer for Event operations.
 
-event_router = APIRouter()
+This module contains the business logic for managing events.
+It interacts with the EventoModel from the database and uses
+the Event Pydantic model for data validation.
+"""
 
-# GET /events - Retrieve all events
-@event_router.get("/events", response_model=list[Event])
-def get_events():
-    try:
-        events = EventoModel.select().where(EventoModel.id > 0).dicts()
-        if events:
-            return list(events)
-        else:
-            raise HTTPException(status_code=404, detail="No events found")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+from typing import Optional
+from peewee import DoesNotExist  # pylint: disable=import-error
+from app.database import EventoModel  # pylint: disable=import-error
+from app.models.event import Event  # pylint: disable=import-error
 
-# GET /events/{event_id} - Retrieve an event by ID
-@event_router.get("/events/{event_id}", response_model=Event)
-def get_event(event_id: int):
-    try:
-        event = EventoModel.get(EventoModel.id == event_id)
-        return event
-    except EventoModel.DoesNotExist:
-        raise HTTPException(status_code=404, detail="Event not found")
 
-# POST /events - Create a new event
-@event_router.post("/events", response_model=Event)
-def create_event(event: Event = Body(...)):
-    try:
-        new_event = EventoModel.create(
-            nombre=event.nombre, 
-            fecha=event.fecha, 
-            ubicacion=event.ubicacion
+class EventService:
+    """Service layer for Event operations."""
+
+    @staticmethod
+    def create_event(name: str, date: str, location: str) -> Event:
+        """
+        Create a new event.
+
+        Args:
+            name (str): The name of the event.
+            date (str): The date of the event.
+            location (str): The location of the event.
+
+        Returns:
+            Event: The created event instance as a Pydantic model.
+        """
+        event_instance = EventoModel.create(name=name, date=date, location=location)
+        return Event(
+            id=event_instance.id,
+            name=event_instance.name,
+            date=event_instance.date,
+            location=event_instance.location,
         )
-        return new_event
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
-# PUT /events/{event_id} - Update an event by ID
-@event_router.put("/events/{event_id}", response_model=Event)
-def update_event(event_id: int, event_data: dict = Body(...)):
-    try:
-        # Update the event with the received data
-        rows_updated = EventoModel.update(**event_data).where(EventoModel.id == event_id).execute()
-        
-        if rows_updated == 0:
-            raise HTTPException(status_code=404, detail="Event not found")
-        
-        # Return the updated event
-        updated_event = EventoModel.get(EventoModel.id == event_id)
-        return updated_event
-    except EventoModel.DoesNotExist:
-        raise HTTPException(status_code=404, detail="Event not found")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    @staticmethod
+    def get_event_by_id(event_id: int) -> Optional[Event]:
+        """
+        Retrieve an event by ID.
 
-# DELETE /events/{event_id} - Delete an event by ID
-@event_router.delete("/events/{event_id}", response_model=dict)
-def delete_event(event_id: int):
-    try:
-        event = EventoModel.get(EventoModel.id == event_id)
-        event.delete_instance()
-        return {"message": "Event deleted successfully"}
-    except EventoModel.DoesNotExist:
-        raise HTTPException(status_code=404, detail="Event not found")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        Args:
+            event_id (int): The ID of the event to retrieve.
+
+        Returns:
+            Optional[Event]: The event instance as a Pydantic model if found, else None.
+        """
+        try:
+            event_instance = EventoModel.get_by_id(event_id)
+            return Event(
+                id=event_instance.id,
+                name=event_instance.name,
+                date=event_instance.date,
+                location=event_instance.location,
+            )
+        except DoesNotExist:
+            return None
+
+    @staticmethod
+    def update_event(
+        event_id: int, name: Optional[str] = None, date: Optional[str] = None, location: Optional[str] = None
+    ) -> Optional[Event]:
+        """
+        Update an existing event by ID.
+
+        Args:
+            event_id (int): The ID of the event to update.
+            name (Optional[str]): The new name of the event.
+            date (Optional[str]): The new date of the event.
+            location (Optional[str]): The new location of the event.
+
+        Returns:
+            Optional[Event]: The updated event instance as a Pydantic model if successful,
+            else None.
+        """
+        try:
+            event_instance = EventoModel.get_by_id(event_id)
+            if name:
+                event_instance.name = name
+            if date:
+                event_instance.date = date
+            if location:
+                event_instance.location = location
+            event_instance.save()  # Save changes to the database
+
+            return Event(
+                id=event_instance.id,
+                name=event_instance.name,
+                date=event_instance.date,
+                location=event_instance.location,
+            )
+        except DoesNotExist:
+            return None
+
+    @staticmethod
+    def delete_event(event_id: int) -> bool:
+        """
+        Delete an event by ID.
+
+        Args:
+            event_id (int): The ID of the event to delete.
+
+        Returns:
+            bool: True if the event was deleted, else False.
+        """
+        try:
+            event_instance = EventoModel.get_by_id(event_id)
+            event_instance.delete_instance()
+            return True
+        except DoesNotExist:
+            return False

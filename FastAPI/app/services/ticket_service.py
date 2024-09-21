@@ -1,68 +1,113 @@
-from FastAPI import APIRouter, HTTPException, Body
-from FastAPI.app.models.ticket import Ticket
-from FastAPI.app.database import TicketModel
-from datetime import datetime
+"""
+Service layer for Ticket operations.
 
-ticket_router = APIRouter()
+This module contains the business logic for managing tickets.
+It interacts with the TicketModel from the database and uses
+the Ticket Pydantic model for data validation.
+"""
 
-# GET /tickets - Retrieve all tickets
-@ticket_router.get("/tickets", response_model=list[Ticket])
-def get_tickets():
-    try:
-        tickets = TicketModel.select().where(TicketModel.id > 0).dicts()
-        if tickets:
-            return list(tickets)
-        else:
-            raise HTTPException(status_code=404, detail="No tickets found")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+from typing import Optional
+from peewee import DoesNotExist  # pylint: disable=import-error
+from app.database import TicketModel  # pylint: disable=import-error
+from app.models.ticket import Ticket  # pylint: disable=import-error
 
-# GET /tickets/{ticket_id} - Retrieve a ticket by ID
-@ticket_router.get("/tickets/{ticket_id}", response_model=Ticket)
-def get_ticket(ticket_id: int):
-    try:
-        ticket = TicketModel.get(TicketModel.id == ticket_id)
-        return ticket
-    except TicketModel.DoesNotExist:
-        raise HTTPException(status_code=404, detail="Ticket not found")
 
-# POST /tickets - Create a new ticket
-@ticket_router.post("/tickets", response_model=Ticket)
-def create_ticket(ticket: Ticket = Body(...)):
-    try:
-        new_ticket = TicketModel.create(
-            evento_id=ticket.evento_id, 
-            usuario_id=ticket.usuario_id, 
-            fecha_compra=ticket.fecha_compra or datetime.now()
+class TicketService:
+    """Service layer for Ticket operations."""
+
+    @staticmethod
+    def create_ticket(event_id: int, user_id: int, date_purchase: str) -> Ticket:
+        """
+        Create a new ticket.
+
+        Args:
+            event_id (int): The ID of the associated event.
+            user_id (int): The ID of the user purchasing the ticket.
+            date_purchase (str): The purchase date of the ticket.
+
+        Returns:
+            Ticket: The created ticket instance as a Pydantic model.
+        """
+        ticket_instance = TicketModel.create(event_id=event_id, user_id=user_id, date_purchase=date_purchase)
+        return Ticket(
+            id=ticket_instance.id,
+            event_id=ticket_instance.event_id,
+            user_id=ticket_instance.user_id,
+            date_purchase=ticket_instance.date_purchase,
         )
-        return new_ticket
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
-# PUT /tickets/{ticket_id} - Update a ticket by ID
-@ticket_router.put("/tickets/{ticket_id}", response_model=Ticket)
-def update_ticket(ticket_id: int, ticket_data: dict = Body(...)):
-    try:
-        rows_updated = TicketModel.update(**ticket_data).where(TicketModel.id == ticket_id).execute()
+    @staticmethod
+    def get_ticket_by_id(ticket_id: int) -> Optional[Ticket]:
+        """
+        Retrieve a ticket by ID.
 
-        if rows_updated == 0:
-            raise HTTPException(status_code=404, detail="Ticket not found")
-        
-        updated_ticket = TicketModel.get(TicketModel.id == ticket_id)
-        return updated_ticket
-    except TicketModel.DoesNotExist:
-        raise HTTPException(status_code=404, detail="Ticket not found")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        Args:
+            ticket_id (int): The ID of the ticket to retrieve.
 
-# DELETE /tickets/{ticket_id} - Delete a ticket by ID
-@ticket_router.delete("/tickets/{ticket_id}", response_model=dict)
-def delete_ticket(ticket_id: int):
-    try:
-        ticket = TicketModel.get(TicketModel.id == ticket_id)
-        ticket.delete_instance()
-        return {"message": "Ticket deleted successfully"}
-    except TicketModel.DoesNotExist:
-        raise HTTPException(status_code=404, detail="Ticket not found")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        Returns:
+            Optional[Ticket]: The ticket instance as a Pydantic model if found, else None.
+        """
+        try:
+            ticket_instance = TicketModel.get_by_id(ticket_id)
+            return Ticket(
+                id=ticket_instance.id,
+                event_id=ticket_instance.event_id,
+                user_id=ticket_instance.user_id,
+                date_purchase=ticket_instance.date_purchase,
+            )
+        except DoesNotExist:
+            return None
+
+    @staticmethod
+    def update_ticket(
+        ticket_id: int, event_id: Optional[int] = None, user_id: Optional[int] = None, date_purchase: Optional[str] = None
+    ) -> Optional[Ticket]:
+        """
+        Update an existing ticket by ID.
+
+        Args:
+            ticket_id (int): The ID of the ticket to update.
+            event_id (Optional[int]): The new event ID associated with the ticket.
+            user_id (Optional[int]): The new user ID purchasing the ticket.
+            date_purchase (Optional[str]): The new purchase date of the ticket.
+
+        Returns:
+            Optional[Ticket]: The updated ticket instance as a Pydantic model if successful,
+            else None.
+        """
+        try:
+            ticket_instance = TicketModel.get_by_id(ticket_id)
+            if event_id is not None:
+                ticket_instance.event_id = event_id
+            if user_id is not None:
+                ticket_instance.user_id = user_id
+            if date_purchase:
+                ticket_instance.date_purchase = date_purchase
+            ticket_instance.save()  # Save changes to the database
+
+            return Ticket(
+                id=ticket_instance.id,
+                event_id=ticket_instance.event_id,
+                user_id=ticket_instance.user_id,
+                date_purchase=ticket_instance.date_purchase,
+            )
+        except DoesNotExist:
+            return None
+
+    @staticmethod
+    def delete_ticket(ticket_id: int) -> bool:
+        """
+        Delete a ticket by ID.
+
+        Args:
+            ticket_id (int): The ID of the ticket to delete.
+
+        Returns:
+            bool: True if the ticket was deleted, else False.
+        """
+        try:
+            ticket_instance = TicketModel.get_by_id(ticket_id)
+            ticket_instance.delete_instance()
+            return True
+        except DoesNotExist:
+            return False
