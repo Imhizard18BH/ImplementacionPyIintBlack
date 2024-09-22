@@ -101,9 +101,11 @@ To ensure the code follows **PEP8** standards, the project uses **Black** for au
     ```bash
     black .
     ```
-**Presented By: Brahyam Hurtado Quiceno and Santiago Parra**
 ---
 
 ## 🏗️ Docker Compose Configuration
 
 The project uses a `docker-compose.yml` file to set up the MySQL database and Adminer. Make sure to configure the `.env` file with your database credentials before running the containers.
+
+---
+**Presented By: Brahyam Hurtado Quiceno and Santiago Parra**
