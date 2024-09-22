@@ -101,7 +101,7 @@ To ensure the code follows **PEP8** standards, the project uses **Black** for au
     ```bash
     black .
     ```
-
+**Presented By: Brahyam Hurtado Quiceno and Santiago Parra**
 ---
 
 ## 🏗️ Docker Compose Configuration
