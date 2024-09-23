@@ -1,11 +1,11 @@
 """
 Module for database configuration and models.
 """
+
 import os
 from dotenv import load_dotenv
 from peewee import MySQLDatabase, Model, AutoField, CharField
 from peewee import DateTimeField, ForeignKeyField, IntegerField
-
 
 
 # Cargar variables de entorno desde el archivo .env
@@ -16,8 +16,9 @@ database = MySQLDatabase(
     user=os.getenv("MYSQL_USER"),
     passwd=os.getenv("MYSQL_PASSWORD"),
     host=os.getenv("MYSQL_HOST"),
-    port=int(os.getenv("MYSQL_PORT"))
+    port=int(os.getenv("MYSQL_PORT")),
 )
+
 
 class EventoModel(Model):
     """
@@ -29,12 +30,13 @@ class EventoModel(Model):
         date (datetime): Date and time of the event.
         location (str): Location of the event.
     """
+
     id = AutoField(primary_key=True)
     nombre = CharField(max_length=50)
     fecha = DateTimeField()
     ubicacion = CharField(max_length=50)
 
-    class Meta: # pylint: disable=too-few-public-methods
+    class Meta:  # pylint: disable=too-few-public-methods
         """
         Configuration for the EventoModel class.
 
@@ -42,8 +44,10 @@ class EventoModel(Model):
             database: Database used.
             table_name: Name of the table in the database.
         """
+
         database = database
         table_name = "events"
+
 
 class TicketModel(Model):
     """
@@ -55,12 +59,13 @@ class TicketModel(Model):
         usuario_id (int): Identifier for the user who purchased the ticket.
         fecha_compra (datetime): Date and time of the ticket purchase.
     """
+
     id = AutoField(primary_key=True)
     evento_id = ForeignKeyField(EventoModel, backref="tickets")
     usuario_id = IntegerField()
     fecha_compra = DateTimeField()
 
-    class Meta: # pylint: disable=too-few-public-methods
+    class Meta:  # pylint: disable=too-few-public-methods
         """
         Configuration for the TicketModel class.
 
@@ -68,5 +73,6 @@ class TicketModel(Model):
             database: Database used.
             table_name: Name of the table in the database.
         """
+
         database = database
         table_name = "tickets"

@@ -17,7 +17,9 @@ class TicketService:
     """Service layer for Ticket operations."""
 
     @staticmethod
-    def create_ticket(evento_id: int, usuario_id: int, fecha_compra: datetime) -> Ticket:
+    def create_ticket(
+        evento_id: int, usuario_id: int, fecha_compra: datetime
+    ) -> Ticket:
         """
         Create a new ticket.
 
@@ -29,8 +31,9 @@ class TicketService:
         Returns:
             Ticket: The created ticket instance as a Pydantic model.
         """
-        ticket_instance = TicketModel.create(evento_id=evento_id, usuario_id=usuario_id,
-                                              fecha_compra=fecha_compra)
+        ticket_instance = TicketModel.create(
+            evento_id=evento_id, usuario_id=usuario_id, fecha_compra=fecha_compra
+        )
         return Ticket(
             id=ticket_instance.id,
             evento_id=ticket_instance.evento_id,
@@ -55,15 +58,17 @@ class TicketService:
                 id=ticket_instance.id,
                 evento_id=ticket_instance.evento_id.id,
                 usuario_id=ticket_instance.usuario_id,
-                fecha_compra=ticket_instance.fecha_compra
+                fecha_compra=ticket_instance.fecha_compra,
             )
         except DoesNotExist:
             return None
 
     @staticmethod
     def update_ticket(
-        ticket_id: int, evento_id: Optional[int] = None, usuario_id: Optional[int] = None,
-          fecha_compra: Optional[datetime] = None
+        ticket_id: int,
+        evento_id: Optional[int] = None,
+        usuario_id: Optional[int] = None,
+        fecha_compra: Optional[datetime] = None,
     ) -> Optional[Ticket]:
         """
         Update an existing ticket by ID.
@@ -89,10 +94,10 @@ class TicketService:
             ticket_instance.save()  # Save changes to the database
 
             return Ticket(
-                 id=ticket_instance.id,
-                 evento_id=ticket_instance.evento_id.id,
-                 usuario_id=ticket_instance.usuario_id,
-                 fecha_compra=ticket_instance.fecha_compra,
+                id=ticket_instance.id,
+                evento_id=ticket_instance.evento_id.id,
+                usuario_id=ticket_instance.usuario_id,
+                fecha_compra=ticket_instance.fecha_compra,
             )
         except DoesNotExist:
             return None

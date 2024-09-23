@@ -1,8 +1,10 @@
 """
 This module defines the Event class that represents an event with its ID, name, date, and location.
 """
+
 from datetime import datetime
 from pydantic import BaseModel
+
 
 class Event(BaseModel):
     """
@@ -14,6 +16,7 @@ class Event(BaseModel):
         fecha (datetime): Date and time of the event.
         ubicacion (str): Location of the event.
     """
+
     id: int
     nombre: str
     fecha: datetime

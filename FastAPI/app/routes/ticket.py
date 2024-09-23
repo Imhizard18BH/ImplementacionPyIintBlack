@@ -1,4 +1,3 @@
-
 """
 Module that defines the routes for managing tickets.
 
@@ -15,6 +14,7 @@ Available routes:
 Each route uses the TicketService to interact with the
 business logic related to tickets.
 """
+
 from datetime import datetime
 from services.ticket_service import TicketService
 from models.ticket import Ticket
@@ -62,8 +62,12 @@ def get_ticket(ticket_id: int) -> Ticket:
 
 
 @ticket_router.put("/tickets/{ticket_id}", response_model=Ticket)
-def update_ticket(ticket_id: int, evento_id: int = None, usuario_id: int = None,
-                  fecha_compra: datetime = None) -> Ticket:
+def update_ticket(
+    ticket_id: int,
+    evento_id: int = None,
+    usuario_id: int = None,
+    fecha_compra: datetime = None,
+) -> Ticket:
     """
     Update ticket information.
 

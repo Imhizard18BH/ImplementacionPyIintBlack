@@ -1,4 +1,3 @@
-
 """
 Module that defines the routes for managing events.
 
@@ -62,7 +61,9 @@ def get_event(event_id: int) -> Event:
 
 
 @event_router.put("/events/{event_id}", response_model=Event)
-def update_event(event_id: int, name: str = None, date: str = None, location: str = None) -> Event:
+def update_event(
+    event_id: int, name: str = None, date: str = None, location: str = None
+) -> Event:
     """
     Update event information.
 

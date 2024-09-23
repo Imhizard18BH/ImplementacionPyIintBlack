@@ -29,7 +29,9 @@ class EventService:
         Returns:
             Event: The created event instance as a Pydantic model.
         """
-        event_instance = EventoModel.create(nombre=nombre, fecha=fecha, ubicacion=ubicacion)
+        event_instance = EventoModel.create(
+            nombre=nombre, fecha=fecha, ubicacion=ubicacion
+        )
         return Event(
             id=event_instance.id,
             nombre=event_instance.nombre,
@@ -61,8 +63,10 @@ class EventService:
 
     @staticmethod
     def update_event(
-        evento_id: int, nombre: Optional[str] = None, fecha: Optional[datetime] = None,
-          ubicacion: Optional[str] = None
+        evento_id: int,
+        nombre: Optional[str] = None,
+        fecha: Optional[datetime] = None,
+        ubicacion: Optional[str] = None,
     ) -> Optional[Event]:
         """
         Update an existing event by ID.
