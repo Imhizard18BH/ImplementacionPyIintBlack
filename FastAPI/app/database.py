@@ -8,7 +8,7 @@ from peewee import MySQLDatabase, Model, AutoField, CharField
 from peewee import DateTimeField, ForeignKeyField, IntegerField
 
 
-# Cargar variables de entorno desde el archivo .env
+# Load environment variables from the .env file
 load_dotenv()
 
 database = MySQLDatabase(
@@ -20,7 +20,7 @@ database = MySQLDatabase(
 )
 
 
-class EventoModel(Model):
+class EventModel(Model):
     """
     Class representing the event model.
 
@@ -32,13 +32,13 @@ class EventoModel(Model):
     """
 
     id = AutoField(primary_key=True)
-    nombre = CharField(max_length=50)
-    fecha = DateTimeField()
-    ubicacion = CharField(max_length=50)
+    name = CharField(max_length=50)
+    date = DateTimeField()
+    location = CharField(max_length=50)
 
     class Meta:  # pylint: disable=too-few-public-methods
         """
-        Configuration for the EventoModel class.
+        Configuration for the EventModel class.
 
         Attributes:
             database: Database used.
@@ -55,15 +55,15 @@ class TicketModel(Model):
 
     Attributes:
         id (int): Unique identifier for the ticket.
-        evento_id (int): Identifier for the associated event.
-        usuario_id (int): Identifier for the user who purchased the ticket.
-        fecha_compra (datetime): Date and time of the ticket purchase.
+        event_id (int): Identifier for the associated event.
+        user_id (int): Identifier for the user who purchased the ticket.
+        purchase_date (datetime): Date and time of the ticket purchase.
     """
 
     id = AutoField(primary_key=True)
-    evento_id = ForeignKeyField(EventoModel, backref="tickets")
-    usuario_id = IntegerField()
-    fecha_compra = DateTimeField()
+    event_id = ForeignKeyField(EventModel, backref="tickets")
+    user_id = IntegerField()
+    purchase_date = DateTimeField()
 
     class Meta:  # pylint: disable=too-few-public-methods
         """

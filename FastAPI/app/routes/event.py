@@ -15,6 +15,7 @@ Each route uses the EventService to interact with the
 business logic related to events.
 """
 
+from datetime import datetime
 from services.event_service import EventService
 from models.event import Event
 from fastapi import APIRouter, HTTPException
@@ -62,7 +63,7 @@ def get_event(event_id: int) -> Event:
 
 @event_router.put("/events/{event_id}", response_model=Event)
 def update_event(
-    event_id: int, name: str = None, date: str = None, location: str = None
+    event_id: int, name: str = None, date: datetime = None, location: str = None
 ) -> Event:
     """
     Update event information.
@@ -70,7 +71,7 @@ def update_event(
     Args:
         event_id (int): The ID of the event to update.
         name (str, optional): The new name of the event.
-        date (str, optional): The new date of the event.
+        date (datetime, optional): The new date of the event.
         location (str, optional): The new location of the event.
 
     Returns:

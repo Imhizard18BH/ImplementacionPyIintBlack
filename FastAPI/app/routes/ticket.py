@@ -25,7 +25,7 @@ ticket_router = APIRouter()
 
 
 @ticket_router.post("/tickets/", response_model=Ticket)
-def create_ticket(evento_id: int, usuario_id: int, fecha_compra: str) -> Ticket:
+def create_ticket(event_id: int, user_id: int, date_purchase: str) -> Ticket:
     """
     Create a new ticket.
 
@@ -37,7 +37,7 @@ def create_ticket(evento_id: int, usuario_id: int, fecha_compra: str) -> Ticket:
     Returns:
         Ticket: The created ticket.
     """
-    ticket = TicketService.create_ticket(evento_id, usuario_id, fecha_compra)
+    ticket = TicketService.create_ticket(event_id, user_id, date_purchase)
     return ticket
 
 
@@ -64,18 +64,18 @@ def get_ticket(ticket_id: int) -> Ticket:
 @ticket_router.put("/tickets/{ticket_id}", response_model=Ticket)
 def update_ticket(
     ticket_id: int,
-    evento_id: int = None,
-    usuario_id: int = None,
-    fecha_compra: datetime = None,
+    event_id: int = None,
+    user_id: int = None,
+    date_purchase: datetime = None,
 ) -> Ticket:
     """
     Update ticket information.
 
     Args:
         ticket_id (int): The ID of the ticket to update.
-        evento_id (int, optional): The new event ID associated with the ticket.
-        usuario_id (int, optional): The new user ID purchasing the ticket.
-        fecha_compra (datetime, optional): The new purchase date of the ticket.
+        event_id (int, optional): The new event ID associated with the ticket.
+        user_id (int, optional): The new user ID purchasing the ticket.
+        date_purchase (datetime, optional): The new purchase date of the ticket.
 
     Returns:
         Ticket: The updated ticket.
@@ -83,7 +83,7 @@ def update_ticket(
     Raises:
         HTTPException: If the ticket is not found.
     """
-    ticket = TicketService.update_ticket(ticket_id, evento_id, usuario_id, fecha_compra)
+    ticket = TicketService.update_ticket(ticket_id, event_id, user_id, date_purchase)
     if ticket:
         return ticket
     raise HTTPException(status_code=404, detail="Ticket not found")

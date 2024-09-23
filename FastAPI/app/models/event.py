@@ -12,12 +12,12 @@ class Event(BaseModel):
 
     Attributes:
         id (int): Unique identifier for the event.
-        nombre (str): Name of the event.
-        fecha (datetime): Date and time of the event.
-        ubicacion (str): Location of the event.
+        name (str): Name of the event.
+        date (datetime): Date and time of the event.
+        location (str): Location of the event.
     """
 
     id: int
-    nombre: str
-    fecha: datetime
-    ubicacion: str
+    name: str
+    date: datetime
+    location: str

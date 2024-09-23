@@ -13,12 +13,12 @@ class Ticket(BaseModel):
 
     Attributes:
         id (int): Unique identifier for the ticket.
-        evento_id (int): Identifier for the associated event.
-        usuario_id (int): Identifier for the user who purchased the ticket.
-        fecha_compra (datetime): Date and time of the ticket purchase.
+        event_id (int): Identifier for the associated event.
+        user_id (int): Identifier for the user who purchased the ticket.
+        purchase_date (datetime): Date and time of the ticket purchase.
     """
 
     id: int
-    evento_id: int
-    usuario_id: int
-    fecha_compra: datetime
+    event_id: int
+    user_id: int
+    purchase_date: datetime
